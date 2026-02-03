@@ -1,0 +1,45 @@
+{
+  "name": "slingshot",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Agentic IDE with One Shot Philosophy",
+  "main": "./out/main/index.js",
+  "author": "Delta Mind GmbH",
+  "license": "MIT",
+  "scripts": {
+    "postinstall": "electron-rebuild",
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "preview": "electron-vite preview",
+    "package": "electron-builder",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@vueuse/core": "^12.0.0",
+    "better-sqlite3": "^11.7.0",
+    "drizzle-orm": "^0.38.3",
+    "isomorphic-git": "^1.27.1",
+    "pinia": "^2.3.0",
+    "uuid": "^11.0.4",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^4.0.3",
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^22.10.6",
+    "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "autoprefixer": "^10.4.20",
+    "drizzle-kit": "^0.30.2",
+    "electron": "^34.0.1",
+    "electron-builder": "^25.1.8",
+    "electron-vite": "^3.0.0",
+    "postcss": "^8.5.0",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7"
+  }
+}
