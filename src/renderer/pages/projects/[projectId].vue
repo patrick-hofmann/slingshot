@@ -35,6 +35,16 @@ function openThread(id: string) {
 function goBack() {
   router.push('/projects')
 }
+
+async function handleDelete() {
+  if (!projectsStore.currentProject) return
+
+  const confirmed = window.confirm(`Delete project "${projectsStore.currentProject.name}"? This will only remove it from the app, not delete any files.`)
+  if (!confirmed) return
+
+  await projectsStore.deleteProject(projectId)
+  router.push('/projects')
+}
 </script>
 
 <template>
@@ -60,10 +70,20 @@ function goBack() {
             {{ projectsStore.currentProject?.repoUrl }}
           </p>
         </div>
-        <UButton @click="uiStore.openNewThread()">
-          <UIcon name="i-heroicons-plus" class="h-4 w-4" />
-          New Thread
-        </UButton>
+        <div class="flex gap-2">
+          <UButton
+            variant="ghost"
+            color="error"
+            @click="handleDelete"
+          >
+            <UIcon name="i-heroicons-trash" class="h-4 w-4" />
+            Delete
+          </UButton>
+          <UButton @click="uiStore.openNewThread()">
+            <UIcon name="i-heroicons-plus" class="h-4 w-4" />
+            New Thread
+          </UButton>
+        </div>
       </div>
     </div>
 

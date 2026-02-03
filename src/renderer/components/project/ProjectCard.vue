@@ -26,6 +26,8 @@ function formatDate(date: Date) {
 <template>
   <UCard
     class="cursor-pointer transition-shadow hover:shadow-md"
+    :data-testid="`project-card-${project.id}`"
+    :data-project-name="project.name"
     @click="$emit('click')"
   >
     <div class="flex items-start gap-3">
