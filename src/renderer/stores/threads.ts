@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Thread, CreateThreadInput, UpdateThreadInput } from '../../preload/index'
+import { useToastStore } from './toast'
 
 export const useThreadsStore = defineStore('threads', () => {
+  const toastStore = useToastStore()
   const threads = ref<Thread[]>([])
   const currentThread = ref<Thread | null>(null)
   const loading = ref(false)
@@ -38,6 +40,7 @@ export const useThreadsStore = defineStore('threads', () => {
     try {
       const thread = await window.slingshot.threads.create(data)
       threads.value.push(thread)
+      toastStore.success('Thread created', thread.name)
       return thread
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to create thread'
@@ -77,6 +80,7 @@ export const useThreadsStore = defineStore('threads', () => {
       if (currentThread.value?.id === id) {
         currentThread.value = null
       }
+      toastStore.success('Thread deleted')
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to delete thread'
       throw e

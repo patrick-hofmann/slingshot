@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { UColorModeButton, UButton, UIcon } from '@/components/ui'
 import SettingsModal from '@/components/settings/SettingsModal.vue'
+import { useUiStore } from '@/stores/ui'
 
 const route = useRoute()
-const showSettings = ref(false)
+const uiStore = useUiStore()
 
 const title = computed(() => {
   if (route.name === 'projects') return 'Projects'
@@ -27,7 +28,7 @@ const title = computed(() => {
         color="neutral"
         size="sm"
         class="no-drag"
-        @click="showSettings = true"
+        @click="uiStore.openSettings()"
       >
         <UIcon name="i-heroicons-cog-6-tooth" class="h-4 w-4" />
       </UButton>
@@ -35,5 +36,5 @@ const title = computed(() => {
     </div>
   </header>
 
-  <SettingsModal v-model:open="showSettings" />
+  <SettingsModal v-model:open="uiStore.showSettings" />
 </template>

@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useProjectsStore } from '@/stores/projects'
 import { useThreadsStore } from '@/stores/threads'
 import { useRunsStore } from '@/stores/runs'
+import { useUiStore } from '@/stores/ui'
 import PlanEditor from '@/components/plan/PlanEditor.vue'
 import RunMonitor from '@/components/run/RunMonitor.vue'
 import LearningsPanel from '@/components/thread/LearningsPanel.vue'
@@ -15,6 +16,7 @@ const router = useRouter()
 const projectsStore = useProjectsStore()
 const threadsStore = useThreadsStore()
 const runsStore = useRunsStore()
+const uiStore = useUiStore()
 
 const projectId = route.params.projectId as string
 const threadId = route.params.threadId as string
@@ -62,6 +64,19 @@ watch(() => route.params.threadId, async (newId) => {
     if (latestPlan.value) {
       planContent.value = latestPlan.value.content
     }
+  }
+})
+
+// Handle keyboard shortcut actions
+watch(() => uiStore.runActionRequested, (action) => {
+  if (action === 'start' && canStartRun.value) {
+    startRun()
+    uiStore.clearRunAction()
+  } else if (action === 'cancel' && isRunning.value) {
+    cancelRun()
+    uiStore.clearRunAction()
+  } else if (action) {
+    uiStore.clearRunAction()
   }
 })
 

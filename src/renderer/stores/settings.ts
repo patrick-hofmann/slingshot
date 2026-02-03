@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { AppSettings } from '../../preload/index'
+import { useToastStore } from './toast'
 
 export const useSettingsStore = defineStore('settings', () => {
+  const toastStore = useToastStore()
   const settings = ref<AppSettings | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
@@ -24,6 +26,7 @@ export const useSettingsStore = defineStore('settings', () => {
     error.value = null
     try {
       settings.value = await window.slingshot.settings.save(newSettings)
+      toastStore.success('Settings saved')
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to save settings'
       throw e

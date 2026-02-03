@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia'
 import { ref, onUnmounted } from 'vue'
 import type { Run, RunEvent, Plan, Learning, CreatePlanInput, CreateLearningInput } from '../../preload/index'
+import { useToastStore } from './toast'
 
 export const useRunsStore = defineStore('runs', () => {
+  const toastStore = useToastStore()
   const runs = ref<Run[]>([])
   const currentRun = ref<Run | null>(null)
   const runEvents = ref<RunEvent[]>([])
@@ -12,6 +14,7 @@ export const useRunsStore = defineStore('runs', () => {
   const error = ref<string | null>(null)
 
   let unsubscribe: (() => void) | null = null
+  let unsubscribeCompleted: (() => void) | null = null
 
   async function fetchRuns(threadId: string) {
     loading.value = true
@@ -49,6 +52,7 @@ export const useRunsStore = defineStore('runs', () => {
       currentRun.value = run
       runEvents.value = []
       subscribeToEvents()
+      toastStore.info('Run started', `Run #${run.runNumber}`)
       return run
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to start run'
@@ -68,6 +72,7 @@ export const useRunsStore = defineStore('runs', () => {
       if (index !== -1) {
         runs.value[index] = { ...runs.value[index], status: 'cancelled' }
       }
+      toastStore.warning('Run cancelled')
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to cancel run'
       throw e
@@ -78,9 +83,26 @@ export const useRunsStore = defineStore('runs', () => {
     if (unsubscribe) {
       unsubscribe()
     }
+    if (unsubscribeCompleted) {
+      unsubscribeCompleted()
+    }
     unsubscribe = window.slingshot.runs.onEvent((streamEvent) => {
       if (currentRun.value && streamEvent.runId === currentRun.value.id) {
         runEvents.value.push(streamEvent.event)
+      }
+    })
+    unsubscribeCompleted = window.slingshot.runs.onCompleted((completedRun) => {
+      if (currentRun.value?.id === completedRun.id) {
+        currentRun.value = completedRun
+      }
+      const index = runs.value.findIndex(r => r.id === completedRun.id)
+      if (index !== -1) {
+        runs.value[index] = completedRun
+      }
+      if (completedRun.status === 'success') {
+        toastStore.success('Run completed', `Run #${completedRun.runNumber} finished successfully`)
+      } else if (completedRun.status === 'failed') {
+        toastStore.error('Run failed', completedRun.errorMessage || 'Unknown error')
       }
     })
   }
@@ -89,6 +111,10 @@ export const useRunsStore = defineStore('runs', () => {
     if (unsubscribe) {
       unsubscribe()
       unsubscribe = null
+    }
+    if (unsubscribeCompleted) {
+      unsubscribeCompleted()
+      unsubscribeCompleted = null
     }
   }
 

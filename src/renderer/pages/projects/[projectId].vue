@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProjectsStore } from '@/stores/projects'
 import { useThreadsStore } from '@/stores/threads'
+import { useUiStore } from '@/stores/ui'
 import ThreadCard from '@/components/thread/ThreadCard.vue'
 import CreateThreadModal from '@/components/thread/CreateThreadModal.vue'
 import { UButton, UIcon } from '@/components/ui'
@@ -11,7 +12,7 @@ const route = useRoute()
 const router = useRouter()
 const projectsStore = useProjectsStore()
 const threadsStore = useThreadsStore()
-const showCreateModal = ref(false)
+const uiStore = useUiStore()
 
 const projectId = route.params.projectId as string
 
@@ -59,7 +60,7 @@ function goBack() {
             {{ projectsStore.currentProject?.repoUrl }}
           </p>
         </div>
-        <UButton @click="showCreateModal = true">
+        <UButton @click="uiStore.openNewThread()">
           <UIcon name="i-heroicons-plus" class="h-4 w-4" />
           New Thread
         </UButton>
@@ -74,7 +75,7 @@ function goBack() {
       <UIcon name="i-heroicons-chat-bubble-left-right" class="mx-auto h-12 w-12 text-gray-400" />
       <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No threads yet</h3>
       <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Start a new thread to work on a task.</p>
-      <UButton class="mt-4" @click="showCreateModal = true">
+      <UButton class="mt-4" @click="uiStore.openNewThread()">
         <UIcon name="i-heroicons-plus" class="h-4 w-4" />
         New Thread
       </UButton>
@@ -91,9 +92,9 @@ function goBack() {
 
     <CreateThreadModal
       v-if="projectsStore.currentProject"
-      v-model:open="showCreateModal"
+      v-model:open="uiStore.showNewThread"
       :project-id="projectId"
-      @created="showCreateModal = false"
+      @created="uiStore.closeNewThread()"
     />
   </div>
 </template>

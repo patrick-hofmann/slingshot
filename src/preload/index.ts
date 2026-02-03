@@ -33,6 +33,7 @@ export interface SlingshotApi {
     cancel(runId: string): Promise<void>
     getEvents(runId: string): Promise<RunEvent[]>
     onEvent(callback: (event: RunStreamEvent) => void): () => void
+    onCompleted(callback: (run: Run) => void): () => void
   }
   // Learnings
   learnings: {
@@ -241,6 +242,11 @@ const api: SlingshotApi = {
       const handler = (_event: IpcRendererEvent, data: RunStreamEvent) => callback(data)
       ipcRenderer.on('runs:event', handler)
       return () => ipcRenderer.removeListener('runs:event', handler)
+    },
+    onCompleted: (callback) => {
+      const handler = (_event: IpcRendererEvent, run: Run) => callback(run)
+      ipcRenderer.on('runs:completed', handler)
+      return () => ipcRenderer.removeListener('runs:completed', handler)
     }
   },
   learnings: {

@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useProjectsStore } from '@/stores/projects'
+import { useUiStore } from '@/stores/ui'
 import ProjectCard from '@/components/project/ProjectCard.vue'
 import CreateProjectModal from '@/components/project/CreateProjectModal.vue'
 import { UButton, UIcon } from '@/components/ui'
 
 const router = useRouter()
 const projectsStore = useProjectsStore()
-const showCreateModal = ref(false)
+const uiStore = useUiStore()
 
 onMounted(() => {
   projectsStore.fetchProjects()
@@ -26,7 +27,7 @@ function openProject(id: string) {
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Projects</h2>
         <p class="text-sm text-gray-500 dark:text-gray-400">Manage your project repositories</p>
       </div>
-      <UButton @click="showCreateModal = true">
+      <UButton @click="uiStore.openNewProject()">
         <UIcon name="i-heroicons-plus" class="h-4 w-4" />
         New Project
       </UButton>
@@ -40,7 +41,7 @@ function openProject(id: string) {
       <UIcon name="i-heroicons-folder" class="mx-auto h-12 w-12 text-gray-400" />
       <h3 class="mt-4 text-lg font-medium text-gray-900 dark:text-white">No projects yet</h3>
       <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Get started by creating a new project.</p>
-      <UButton class="mt-4" @click="showCreateModal = true">
+      <UButton class="mt-4" @click="uiStore.openNewProject()">
         <UIcon name="i-heroicons-plus" class="h-4 w-4" />
         New Project
       </UButton>
@@ -56,8 +57,8 @@ function openProject(id: string) {
     </div>
 
     <CreateProjectModal
-      v-model:open="showCreateModal"
-      @created="showCreateModal = false"
+      v-model:open="uiStore.showNewProject"
+      @created="uiStore.closeNewProject()"
     />
   </div>
 </template>
